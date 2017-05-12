@@ -8,7 +8,7 @@ shinyUI(dashboardPage(
   dashboardHeader(title = "PDash", titleWidth = 220),
   dashboardSidebar(width=220,
                    sidebarMenu(
-                     menuItem("Volcano plots",tabName="vp",icon=shiny::icon("line-chart")),
+                     menuItem("Scatter plot",tabName="vp",icon=shiny::icon("line-chart")),
                      menuItem("Peptide plots",tabName="pep",icon=shiny::icon("line-chart"))
                    )
   ),
@@ -39,8 +39,8 @@ shinyUI(dashboardPage(
                             selectInput("vsep","Column delimeter",choices = c("comma","tab","space"))
                   ),
                   tabPanel("Plot Controls",
-                          uiOutput("vplot_cols"),
-                          actionButton("vgo",label = "Plot",icon=shiny::icon("arrow-circle-right"))
+                          uiOutput("vplot_cols")
+                          #actionButton("vgo",label = "Plot",icon=shiny::icon("arrow-circle-right"))
                   ),
                   tabPanel("Filters",
                            uiOutput("vplot_fils")

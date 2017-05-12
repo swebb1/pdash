@@ -118,7 +118,6 @@ shinyServer(function(input, output,session) {
     #isolate({
     #  if(is.null(VData())){return(NULL)}
     #})
-    df<-VData()
     items=Vvalues$items
     num<-Vvalues$numeric
     tagList(
@@ -160,7 +159,7 @@ shinyServer(function(input, output,session) {
     
   
   ##v plot
-  vplot<-eventReactive(input$vgo,{
+  vplot<-reactive({
     if(is.null(VData())){return(NULL)}
     par(mar=c(10,5,5,5))
     withProgress(message="Plotting...",value=0,{

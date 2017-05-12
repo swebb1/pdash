@@ -1,0 +1,10 @@
+@import url('//fonts.googleapis.com/css?family=Audiowide|Cabin:400,700');
+
+.main-header .logo {
+  font-family: 'Audiowide';
+  font-weight: 200;
+  font-size: 40px;
+}
+
+.well { background-color: #FFFFFF; }
+

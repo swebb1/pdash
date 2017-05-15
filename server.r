@@ -128,12 +128,19 @@ shinyServer(function(input, output,session) {
       selectInput("vcol", "Colour points by",num),
       selectInput("vtext", "Hover text",items),
       selectInput("vlabels","Label points by",c("NA",items)),
-      conditionalPanel(condition="input.vlabels != 'NA'",
+      #conditionalPanel(condition="input.vlabels != 'NA'",
                        numericInput("vnudgex","Nudge labels on X-axis",0),
                        numericInput("vnudgey","Nudge labels on Y-axis",0),
-                       textInput("vlabeldisplay","Labels to display","")
+                       textInput("vlabeldisplay","Labels to display",""),
+                       actionButton("vdisp",label = "Label",icon=shiny::icon("sticky-note")
+      #)
+                       
       )
     )
+  })
+  
+  vldisp<-eventReactive(input$vdisp,{
+    return(list(label=input$vlabels,nx=input$vnudgex,ny=input$vnudgey,ld=input$vlabeldisplay))
   })
   
   ##V plot controls
@@ -157,6 +164,9 @@ shinyServer(function(input, output,session) {
     })
   })
     
+  ##activate tab from the start
+  outputOptions(output, 'vplot_cols', suspendWhenHidden=FALSE) 
+  outputOptions(output, 'vplot_fils', suspendWhenHidden=FALSE) 
   
   ##v plot
   vplot<-reactive({
@@ -165,13 +175,15 @@ shinyServer(function(input, output,session) {
     withProgress(message="Plotting...",value=0,{
     df<-VData()
     g<-ggplot(df,aes_string(y=input$vy,x=input$vx,text=input$vtext,colour=input$vcol))+geom_point()+theme_bw()
-    if(input$vlabels != "NA"){
-      label_display=df[,input$vlabels]
-      if(input$vlabeldisplay != ""){
-        label_display = eval(parse(text=paste0("subset(df,df$",input$vlabeldisplay,")[,input$vlabels]")))
-        label_display=ifelse(df[,input$vlabels] %in% label_display,as.character(df[,input$vlabels]),'')
+    if(input$vdisp>0){
+      if(vldisp()[['label']] != "NA"){
+        label_display=df[,vldisp()[['label']]]
+        if(vldisp()[["ld"]] != ""){ ##if label button pushed and text entered
+          label_display = eval(parse(text=paste0("subset(df,df$",vldisp()[['ld']],")[,vldisp()[['label']]]")))
+          label_display=ifelse(df[,vldisp()[['label']]] %in% label_display,as.character(df[,vldisp()[['label']]]),'')
+        }
+        g<-g+geom_text(aes(label=label_display),nudge_y=vldisp()[['ny']],nudge_x=vldisp()[['nx']])
       }
-      g<-g+geom_text(aes(label=label_display),nudge_y=input$vnudgey,nudge_x=input$vnudgex)
     }
     if(input$vlogx){
       g<-g+scale_x_log10()
